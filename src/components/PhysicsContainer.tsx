@@ -85,36 +85,53 @@ const PhysicsContainer: React.FC<PhysicsContainerProps> = ({
         </mesh>
 
         {/* Invisible walls with physics colliders */}
-        <RigidBody type="fixed" position={[0, 0, 0]} restitution={0.7} friction={particleWallFriction ? 0.4 : 0}>
+        <RigidBody 
+          type="fixed" 
+          position={[0, 0, 0]} 
+          restitution={1.0}
+          friction={particleWallFriction ? 0.4 : 0}
+        >
           {/* Bottom */}
           <CuboidCollider
             args={[HALF_SIZE, WALL_THICKNESS, HALF_SIZE]}
             position={[0, -HALF_SIZE, 0]}
+            restitution={1.0}
+            friction={particleWallFriction ? 0.4 : 0}
           />
           {/* Top */}
           <CuboidCollider
             args={[HALF_SIZE, WALL_THICKNESS, HALF_SIZE]}
             position={[0, HALF_SIZE, 0]}
+            restitution={1.0}
+            friction={particleWallFriction ? 0.4 : 0}
           />
           {/* Left */}
           <CuboidCollider
             args={[WALL_THICKNESS, HALF_SIZE, HALF_SIZE]}
             position={[-HALF_SIZE, 0, 0]}
+            restitution={1.0}
+            friction={particleWallFriction ? 0.4 : 0}
           />
           {/* Right */}
           <CuboidCollider
             args={[WALL_THICKNESS, HALF_SIZE, HALF_SIZE]}
             position={[HALF_SIZE, 0, 0]}
+            restitution={1.0}
+            friction={particleWallFriction ? 0.4 : 0}
           />
           {/* Front */}
           <CuboidCollider
             args={[HALF_SIZE, HALF_SIZE, WALL_THICKNESS]}
             position={[0, 0, -HALF_SIZE]}
+            restitution={1.0}
+            friction={particleWallFriction ? 0.4 : 0}
           />
           {/* Back */}
           <CuboidCollider
             args={[HALF_SIZE, HALF_SIZE, WALL_THICKNESS]}
             position={[0, 0, HALF_SIZE]}
+            restitution={1.0}
+            friction={particleWallFriction ? 0.4 : 0}
           />
         </RigidBody>
 
@@ -124,11 +141,17 @@ const PhysicsContainer: React.FC<PhysicsContainerProps> = ({
             key={particle.id}
             position={particle.position}
             linearVelocity={particle.velocity}
-            restitution={0.7} // Bounciness
+            restitution={1.0} // Perfect elasticity (no energy loss)
             friction={particleParticleFriction ? 0.4 : 0}
+            linearDamping={0} // No linear damping
+            angularDamping={0} // No angular damping
             colliders={false}
           >
-            <BallCollider args={[PARTICLE_RADIUS]} />
+            <BallCollider 
+              args={[PARTICLE_RADIUS]} 
+              restitution={1.0}
+              friction={particleParticleFriction ? 0.4 : 0}
+            />
             <mesh>
               <sphereGeometry args={[PARTICLE_RADIUS, 16, 16]} />
               <meshStandardMaterial color={0xfe8c8c} />

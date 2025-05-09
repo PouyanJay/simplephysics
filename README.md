@@ -1,54 +1,100 @@
-# React + TypeScript + Vite
+# SimplePhysics
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A 3D particle physics simulator built with React, Three.js, and Rapier physics engine.
 
-Currently, two official plugins are available:
+![SimplePhysics Simulator](public/screenshot.png)
+<!-- Note: You'll need to take a screenshot of your application and save it as public/screenshot.png -->
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## Expanding the ESLint configuration
+- Interactive 3D particle simulation with 100 particles
+- Real-time physics with customizable parameters
+- Toggle particle-to-particle friction
+- Toggle particle-to-wall friction
+- Toggle gravity simulation
+- Adjustable delta time (simulation speed)
+- Pause/resume functionality
+- Reset simulation
+- Orbit controls for camera movement
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Demo
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+Visit the live demo at [https://simplephysics-demo.vercel.app](https://simplephysics-demo.vercel.app)
+
+## Technologies Used
+
+- React 19
+- TypeScript
+- Three.js / React Three Fiber
+- Rapier 3D Physics Engine
+- Vite
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v18 or higher)
+- npm or yarn
+
+### Installation
+
+1. Clone the repository
+   ```bash
+   git clone https://github.com/yourusername/simplephysics.git
+   cd simplephysics
+   ```
+
+2. Install dependencies
+   ```bash
+   npm install
+   ```
+
+3. Start the development server
+   ```bash
+   npm run dev
+   ```
+
+4. Open your browser and navigate to http://localhost:5173
+
+## Building for Production
+
+To build the application for production:
+
+```bash
+npm run build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+To preview the production build:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+```bash
+npm run preview
 ```
+
+## How It Works
+
+The simulation creates a transparent 3D container with 100 particles that collide with each other and the container walls. The physics engine handles all collisions and interactions between particles.
+
+### Controls
+
+- **Particle-Particle Friction**: Toggle friction between particles
+- **Particle-Wall Friction**: Toggle friction between particles and container walls
+- **Gravity**: Toggle gravitational force
+- **δt (Delta Time)**: Adjust simulation speed
+- **Reset**: Restart the simulation with random particle positions
+- **Play/Pause**: Control the simulation flow
+
+### 3D Navigation
+
+- **Rotate**: Click and drag to rotate the view
+- **Zoom**: Scroll to zoom in/out
+- **Pan**: Right-click and drag to pan
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgements
+
+- [Three.js](https://threejs.org/) for 3D rendering
+- [React Three Fiber](https://github.com/pmndrs/react-three-fiber) for React integration with Three.js
+- [Rapier](https://rapier.rs/) for the physics engine

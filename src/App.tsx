@@ -60,6 +60,9 @@ function App() {
             gravity={gravity ? [0, -9.81, 0] : [0, 0, 0]}
             timeStep={deltaTime * 0.01}
             paused={!isPlaying}
+            interpolate={false}
+            colliders={false}
+            numSolverIterations={4}
           >
             <PhysicsContainer
               key={resetKey}
