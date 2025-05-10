@@ -2,6 +2,7 @@ import React from 'react'
 import Slider from 'rc-slider'
 import 'rc-slider/assets/index.css'
 import '../styles/Slider.css'
+import ToggleSwitch from './ToggleSwitch'
 
 interface ControlPanelProps {
   particleParticleFriction: boolean
@@ -89,16 +90,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   initialVelocity,
   setInitialVelocity,
 }) => {
-  const ToggleSwitch = ({ isActive, onChange, label }: { isActive: boolean; onChange: () => void; label: string }) => (
-    <div className="control-group">
-      <label>{label}</label>
-      <div
-        className={`toggle-switch ${isActive ? 'active' : ''}`}
-        onClick={onChange}
-      />
-    </div>
-  )
-
   return (
     <>
       <h2>Physics Controls</h2>
