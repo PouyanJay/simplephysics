@@ -7,16 +7,17 @@ interface PhysicsContainerProps {
   particleParticleFriction: boolean
   particleWallFriction: boolean
   gravity?: boolean
+  // New parameters
+  restitution?: number
+  particleCount?: number
+  particleSize?: number
+  initialVelocity?: number
 }
 
 // Container dimensions
 const CONTAINER_SIZE = 2.5
 const HALF_SIZE = CONTAINER_SIZE / 2
 const WALL_THICKNESS = 0.05
-
-// Number of particles
-const NUM_PARTICLES = 100
-const PARTICLE_RADIUS = 0.08
 
 // Define the particle instance type
 interface Particle {
@@ -48,18 +49,28 @@ const DEBUG = {
 }
 
 // Function to generate initial particles data
-const generateParticles = (): Particle[] => {
+const generateParticles = (
+  count: number, 
+  size: number, 
+  maxVelocity: number,
+  containerSize: number
+): { 
+  particles: Particle[], 
+  radius: number 
+} => {
   const particles: Particle[] = []
-  const padding = PARTICLE_RADIUS * 2
+  const radius = size
+  const halfSize = containerSize / 2
+  const padding = radius * 2
   
-  for (let i = 0; i < NUM_PARTICLES; i++) {
+  for (let i = 0; i < count; i++) {
     // Random position inside container with padding
-    const x = (Math.random() * (CONTAINER_SIZE - padding * 2) - HALF_SIZE + padding)
-    const y = (Math.random() * (CONTAINER_SIZE - padding * 2) - HALF_SIZE + padding)
-    const z = (Math.random() * (CONTAINER_SIZE - padding * 2) - HALF_SIZE + padding)
+    const x = (Math.random() * (containerSize - padding * 2) - halfSize + padding)
+    const y = (Math.random() * (containerSize - padding * 2) - halfSize + padding)
+    const z = (Math.random() * (containerSize - padding * 2) - halfSize + padding)
     
-    // Random velocity with more conservative speeds (slower) to ensure stable simulation
-    const speed = 0.5 + Math.random() * 0.5 // Reduced range to ensure stability
+    // Random velocity with speed based on initialVelocity parameter
+    const speed = (0.5 + Math.random() * 0.5) * maxVelocity
     const phi = Math.random() * Math.PI * 2
     const theta = Math.random() * Math.PI
     
@@ -75,7 +86,7 @@ const generateParticles = (): Particle[] => {
     })
   }
   
-  return particles
+  return { particles, radius }
 }
 
 // Function to check if a velocity has invalid values
@@ -88,13 +99,26 @@ const hasInvalidVelocity = (vel: { x: number, y: number, z: number }) => {
 const PhysicsContainer: React.FC<PhysicsContainerProps> = ({
   particleParticleFriction,
   particleWallFriction,
-  gravity = false
+  gravity = false,
+  // New parameters with defaults
+  restitution = 0.999,
+  particleCount = 100,
+  particleSize = 0.08,
+  initialVelocity = 1.0
 }) => {
   // Use counter to force re-render on reset
   const [resetCounter, setResetCounter] = useState(0)
   
   // Generate particles
-  const particles = useMemo(() => generateParticles(), [resetCounter])
+  const { particles, radius } = useMemo(() => 
+    generateParticles(
+      particleCount, 
+      particleSize, 
+      initialVelocity,
+      CONTAINER_SIZE
+    ), 
+    [resetCounter, particleCount, particleSize, initialVelocity, CONTAINER_SIZE]
+  )
   
   // Store references to rigid bodies to monitor/correct velocities
   const particleRefs = useRef<RapierRigidBody[]>([])
@@ -114,7 +138,7 @@ const PhysicsContainer: React.FC<PhysicsContainerProps> = ({
     DEBUG.logCount = 0
     DEBUG.issues.clear()
     setHasDetectedIssue(false)
-  }, [particleParticleFriction, particleWallFriction, gravity])
+  }, [particleParticleFriction, particleWallFriction, gravity, particleCount, particleSize, initialVelocity, restitution])
 
   // Rotate the container slightly for better 3D perspective
   const groupRef = useRef<THREE.Group>(null)
@@ -316,7 +340,7 @@ const PhysicsContainer: React.FC<PhysicsContainerProps> = ({
         <RigidBody 
           type="fixed" 
           position={[0, 0, 0]} 
-          restitution={0.999} // Slightly less than 1.0 to avoid energy accumulation
+          restitution={restitution} // Use the configured restitution
           friction={particleWallFriction ? 0.3 : 0}
           linearDamping={0}
           angularDamping={0}
@@ -325,42 +349,42 @@ const PhysicsContainer: React.FC<PhysicsContainerProps> = ({
           <CuboidCollider
             args={[HALF_SIZE, WALL_THICKNESS, HALF_SIZE]}
             position={[0, -HALF_SIZE, 0]}
-            restitution={0.999}
+            restitution={restitution}
             friction={particleWallFriction ? 0.3 : 0}
           />
           {/* Top */}
           <CuboidCollider
             args={[HALF_SIZE, WALL_THICKNESS, HALF_SIZE]}
             position={[0, HALF_SIZE, 0]}
-            restitution={0.999}
+            restitution={restitution}
             friction={particleWallFriction ? 0.3 : 0}
           />
           {/* Left */}
           <CuboidCollider
             args={[WALL_THICKNESS, HALF_SIZE, HALF_SIZE]}
             position={[-HALF_SIZE, 0, 0]}
-            restitution={0.999}
+            restitution={restitution}
             friction={particleWallFriction ? 0.3 : 0}
           />
           {/* Right */}
           <CuboidCollider
             args={[WALL_THICKNESS, HALF_SIZE, HALF_SIZE]}
             position={[HALF_SIZE, 0, 0]}
-            restitution={0.999}
+            restitution={restitution}
             friction={particleWallFriction ? 0.3 : 0}
           />
           {/* Front */}
           <CuboidCollider
             args={[HALF_SIZE, HALF_SIZE, WALL_THICKNESS]}
             position={[0, 0, -HALF_SIZE]}
-            restitution={0.999}
+            restitution={restitution}
             friction={particleWallFriction ? 0.3 : 0}
           />
           {/* Back */}
           <CuboidCollider
             args={[HALF_SIZE, HALF_SIZE, WALL_THICKNESS]}
             position={[0, 0, HALF_SIZE]}
-            restitution={0.999}
+            restitution={restitution}
             friction={particleWallFriction ? 0.3 : 0}
           />
         </RigidBody>
@@ -372,7 +396,7 @@ const PhysicsContainer: React.FC<PhysicsContainerProps> = ({
             ref={addBodyRef}
             position={particle.position}
             linearVelocity={particle.velocity}
-            restitution={0.999} // Slightly less than 1.0 to avoid energy accumulation
+            restitution={restitution} // Use the configured restitution
             friction={particleParticleFriction ? 0.3 : 0}
             linearDamping={0}
             angularDamping={0}
@@ -383,13 +407,13 @@ const PhysicsContainer: React.FC<PhysicsContainerProps> = ({
             gravityScale={gravity ? 1 : 0}
           >
             <BallCollider 
-              args={[PARTICLE_RADIUS]} 
-              restitution={0.999}
+              args={[radius]} // Use the calculated radius
+              restitution={restitution}
               friction={particleParticleFriction ? 0.3 : 0}
               density={1}
             />
             <mesh>
-              <sphereGeometry args={[PARTICLE_RADIUS, 16, 16]} />
+              <sphereGeometry args={[radius, 16, 16]} />
               <meshStandardMaterial color={0xfe8c8c} />
             </mesh>
           </RigidBody>

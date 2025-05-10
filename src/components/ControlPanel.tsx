@@ -12,6 +12,14 @@ interface ControlPanelProps {
   isPlaying: boolean
   setIsPlaying: (value: boolean) => void
   onReset: () => void
+  restitution: number
+  setRestitution: (value: number) => void
+  particleCount: number
+  setParticleCount: (value: number) => void
+  particleSize: number
+  setParticleSize: (value: number) => void
+  initialVelocity: number
+  setInitialVelocity: (value: number) => void
 }
 
 const ControlPanel: React.FC<ControlPanelProps> = ({
@@ -26,6 +34,14 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   isPlaying,
   setIsPlaying,
   onReset,
+  restitution,
+  setRestitution,
+  particleCount,
+  setParticleCount,
+  particleSize,
+  setParticleSize,
+  initialVelocity,
+  setInitialVelocity,
 }) => {
   const ToggleSwitch = ({ isActive, onChange, label }: { isActive: boolean; onChange: () => void; label: string }) => (
     <div className="control-group">
@@ -37,8 +53,44 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
     </div>
   )
 
+  const Slider = ({ 
+    value, 
+    onChange, 
+    label, 
+    min, 
+    max, 
+    step = 0.01, 
+    formatValue = (v: number) => v.toFixed(2) 
+  }: { 
+    value: number
+    onChange: (value: number) => void
+    label: string
+    min: number
+    max: number
+    step?: number
+    formatValue?: (value: number) => string
+  }) => (
+    <div className="slider-container">
+      <label>
+        <span>{label}</span>
+        <span>{formatValue(value)}</span>
+      </label>
+      <input
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={(e) => onChange(parseFloat(e.target.value))}
+        className="slider"
+      />
+    </div>
+  )
+
   return (
     <>
+      <h2>Physics Controls</h2>
+      
       <ToggleSwitch
         isActive={particleParticleFriction}
         onChange={() => setParticleParticleFriction(!particleParticleFriction)}
@@ -55,29 +107,61 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         label="Gravity"
       />
 
-      <div className="slider-container">
-        <label>
-          <span>δt</span>
-          <span>{deltaTime.toFixed(2)}</span>
-        </label>
-        <input
-          type="range"
-          min="0.01"
-          max="1.0"
-          step="0.01"
-          value={deltaTime}
-          onChange={(e) => setDeltaTime(parseFloat(e.target.value))}
-          className="slider"
-        />
+      <h2>Simulation Parameters</h2>
+      
+      <Slider
+        label="Restitution"
+        value={restitution}
+        onChange={setRestitution}
+        min={0.1}
+        max={1.0}
+      />
+      
+      <Slider
+        label="Particle Count"
+        value={particleCount}
+        onChange={setParticleCount}
+        min={10}
+        max={500}
+        step={10}
+        formatValue={(v) => Math.round(v).toString()}
+      />
+      
+      <Slider
+        label="Particle Size"
+        value={particleSize}
+        onChange={setParticleSize}
+        min={0.02}
+        max={0.2}
+      />
+      
+      <Slider
+        label="Initial Velocity"
+        value={initialVelocity}
+        onChange={setInitialVelocity}
+        min={0.1}
+        max={5.0}
+      />
+      
+      <Slider
+        label="δt (Simulation Speed)"
+        value={deltaTime}
+        onChange={setDeltaTime}
+        min={0.01}
+        max={1.0}
+      />
+
+      <h2>Simulation Controls</h2>
+      
+      <div className="button-group">
+        <button className="button" onClick={onReset}>
+          Reset
+        </button>
+
+        <button className="button" onClick={() => setIsPlaying(!isPlaying)}>
+          {isPlaying ? 'Pause' : 'Play'}
+        </button>
       </div>
-
-      <button className="button" onClick={onReset}>
-        Reset
-      </button>
-
-      <button className="button" onClick={() => setIsPlaying(!isPlaying)}>
-        {isPlaying ? 'Pause' : 'Play'}
-      </button>
     </>
   )
 }

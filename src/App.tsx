@@ -14,6 +14,12 @@ function App() {
   const [deltaTime, setDeltaTime] = useState(0.5) // Default deltaTime
   const [isPlaying, setIsPlaying] = useState(true)
   
+  // New parameters
+  const [restitution, setRestitution] = useState(0.999) // Default restitution
+  const [particleCount, setParticleCount] = useState(100) // Default particle count
+  const [particleSize, setParticleSize] = useState(0.08) // Default particle size
+  const [initialVelocity, setInitialVelocity] = useState(1.0) // Default initial velocity
+  
   // Add key to force physics container to re-render on reset
   const [resetKey, setResetKey] = useState(0)
   const [physicsKey, setPhysicsKey] = useState(0)
@@ -32,6 +38,11 @@ function App() {
   useEffect(() => {
     setPhysicsKey(prev => prev + 1)
   }, [gravity, particleParticleFriction, particleWallFriction])
+  
+  // Reset simulation when particle parameters change
+  useEffect(() => {
+    handleReset()
+  }, [particleCount, particleSize, initialVelocity])
 
   // Determine proper physics settings based on friction state
   const timeStep = (!particleParticleFriction && !particleWallFriction) 
@@ -54,6 +65,14 @@ function App() {
           isPlaying={isPlaying}
           setIsPlaying={setIsPlaying}
           onReset={handleReset}
+          restitution={restitution}
+          setRestitution={setRestitution}
+          particleCount={particleCount}
+          setParticleCount={setParticleCount}
+          particleSize={particleSize}
+          setParticleSize={setParticleSize}
+          initialVelocity={initialVelocity}
+          setInitialVelocity={setInitialVelocity}
         />
       </div>
       <div className="simulation-container">
@@ -74,6 +93,10 @@ function App() {
               particleParticleFriction={particleParticleFriction}
               particleWallFriction={particleWallFriction}
               gravity={gravity}
+              restitution={restitution}
+              particleCount={particleCount}
+              particleSize={particleSize}
+              initialVelocity={initialVelocity}
             />
           </Physics>
           <OrbitControls enablePan={true} enableZoom={true} enableRotate={true} />
