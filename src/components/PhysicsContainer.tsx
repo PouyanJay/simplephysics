@@ -12,6 +12,7 @@ interface PhysicsContainerProps {
   particleCount?: number
   particleSize?: number
   initialVelocity?: number
+  onActiveParticlesChange?: (count: number) => void
 }
 
 // Container dimensions
@@ -104,7 +105,8 @@ const PhysicsContainer: React.FC<PhysicsContainerProps> = ({
   restitution = 0.999,
   particleCount = 100,
   particleSize = 0.08,
-  initialVelocity = 1.0
+  initialVelocity = 1.0,
+  onActiveParticlesChange
 }) => {
   // Use counter to force re-render on reset
   const [resetCounter, setResetCounter] = useState(0)
@@ -198,11 +200,24 @@ const PhysicsContainer: React.FC<PhysicsContainerProps> = ({
     return () => clearTimeout(timer)
   }, [resetCounter])
   
+  // Report active particles count
+  useEffect(() => {
+    if (onActiveParticlesChange) {
+      onActiveParticlesChange(particleCount);
+    }
+  }, [particleCount, onActiveParticlesChange]);
+  
   // Use a more conservative approach to handle the zero-friction case
   useFrame(() => {
     // Only check every 3rd frame - frequent enough to catch issues but not every frame
     frameCounter.current = (frameCounter.current + 1) % 3
     if (frameCounter.current !== 0) return
+    
+    // Count active (non-sleeping) particles
+    if (onActiveParticlesChange) {
+      const activeCount = particleRefs.current.filter(body => body && !body.isSleeping()).length;
+      onActiveParticlesChange(activeCount);
+    }
     
     // Only apply in zero-friction mode
     if (!particleParticleFriction && !particleWallFriction) {

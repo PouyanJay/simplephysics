@@ -1,4 +1,7 @@
 import React from 'react'
+import Slider from 'rc-slider'
+import 'rc-slider/assets/index.css'
+import '../styles/Slider.css'
 
 interface ControlPanelProps {
   particleParticleFriction: boolean
@@ -21,6 +24,49 @@ interface ControlPanelProps {
   initialVelocity: number
   setInitialVelocity: (value: number) => void
 }
+
+const CustomSlider = ({ 
+  value, 
+  onChange, 
+  label, 
+  min, 
+  max, 
+  step = 0.01, 
+  formatValue = (v: number) => v.toFixed(2) 
+}: { 
+  value: number
+  onChange: (value: number) => void
+  label: string
+  min: number
+  max: number
+  step?: number
+  formatValue?: (value: number) => string
+}) => {
+  return (
+    <div className="slider-container">
+      <div className="slider-header">
+        <span>{label}</span>
+        <span className="slider-value">{formatValue(value)}</span>
+      </div>
+      <Slider 
+        className="rc-slider"
+        value={value}
+        onChange={onChange as (value: number | number[]) => void}
+        min={min}
+        max={max}
+        step={step}
+        railStyle={{ backgroundColor: 'var(--slider-track)' }}
+        trackStyle={{ background: 'var(--accent-gradient)' }}
+        handleStyle={{
+          borderColor: 'var(--accent-primary)',
+          backgroundColor: 'var(--accent-primary)',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.3)',
+          opacity: 1
+        }}
+      />
+    </div>
+  );
+};
 
 const ControlPanel: React.FC<ControlPanelProps> = ({
   particleParticleFriction,
@@ -53,40 +99,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
     </div>
   )
 
-  const Slider = ({ 
-    value, 
-    onChange, 
-    label, 
-    min, 
-    max, 
-    step = 0.01, 
-    formatValue = (v: number) => v.toFixed(2) 
-  }: { 
-    value: number
-    onChange: (value: number) => void
-    label: string
-    min: number
-    max: number
-    step?: number
-    formatValue?: (value: number) => string
-  }) => (
-    <div className="slider-container">
-      <label>
-        <span>{label}</span>
-        <span>{formatValue(value)}</span>
-      </label>
-      <input
-        type="range"
-        min={min}
-        max={max}
-        step={step}
-        value={value}
-        onChange={(e) => onChange(parseFloat(e.target.value))}
-        className="slider"
-      />
-    </div>
-  )
-
   return (
     <>
       <h2>Physics Controls</h2>
@@ -109,7 +121,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
 
       <h2>Simulation Parameters</h2>
       
-      <Slider
+      <CustomSlider
         label="Restitution"
         value={restitution}
         onChange={setRestitution}
@@ -117,7 +129,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         max={1.0}
       />
       
-      <Slider
+      <CustomSlider
         label="Particle Count"
         value={particleCount}
         onChange={setParticleCount}
@@ -127,7 +139,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         formatValue={(v) => Math.round(v).toString()}
       />
       
-      <Slider
+      <CustomSlider
         label="Particle Size"
         value={particleSize}
         onChange={setParticleSize}
@@ -135,7 +147,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         max={0.2}
       />
       
-      <Slider
+      <CustomSlider
         label="Initial Velocity"
         value={initialVelocity}
         onChange={setInitialVelocity}
@@ -143,7 +155,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         max={5.0}
       />
       
-      <Slider
+      <CustomSlider
         label="δt (Simulation Speed)"
         value={deltaTime}
         onChange={setDeltaTime}

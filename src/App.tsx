@@ -5,6 +5,7 @@ import { OrbitControls } from '@react-three/drei'
 import './App.css'
 import PhysicsContainer from './components/PhysicsContainer'
 import ControlPanel from './components/ControlPanel'
+import Logo from './components/Logo'
 
 function App() {
   // Physics simulation states
@@ -23,6 +24,9 @@ function App() {
   // Add key to force physics container to re-render on reset
   const [resetKey, setResetKey] = useState(0)
   const [physicsKey, setPhysicsKey] = useState(0)
+
+  // Active particle count for status display
+  const [activeParticles, setActiveParticles] = useState(0)
 
   const handleReset = () => {
     // Increment reset key to force re-render
@@ -52,33 +56,38 @@ function App() {
   return (
     <div className="app-container">
       <div className="control-panel">
-        <h1>Simple Physics</h1>
-        <ControlPanel
-          particleParticleFriction={particleParticleFriction}
-          setParticleParticleFriction={setParticleParticleFriction}
-          particleWallFriction={particleWallFriction}
-          setParticleWallFriction={setParticleWallFriction}
-          gravity={gravity}
-          setGravity={setGravity}
-          deltaTime={deltaTime}
-          setDeltaTime={setDeltaTime}
-          isPlaying={isPlaying}
-          setIsPlaying={setIsPlaying}
-          onReset={handleReset}
-          restitution={restitution}
-          setRestitution={setRestitution}
-          particleCount={particleCount}
-          setParticleCount={setParticleCount}
-          particleSize={particleSize}
-          setParticleSize={setParticleSize}
-          initialVelocity={initialVelocity}
-          setInitialVelocity={setInitialVelocity}
-        />
+        <div className="control-section-blur">
+          <Logo />
+        </div>
+        <div className="control-panel-inner">
+          <ControlPanel
+            particleParticleFriction={particleParticleFriction}
+            setParticleParticleFriction={setParticleParticleFriction}
+            particleWallFriction={particleWallFriction}
+            setParticleWallFriction={setParticleWallFriction}
+            gravity={gravity}
+            setGravity={setGravity}
+            deltaTime={deltaTime}
+            setDeltaTime={setDeltaTime}
+            isPlaying={isPlaying}
+            setIsPlaying={setIsPlaying}
+            onReset={handleReset}
+            restitution={restitution}
+            setRestitution={setRestitution}
+            particleCount={particleCount}
+            setParticleCount={setParticleCount}
+            particleSize={particleSize}
+            setParticleSize={setParticleSize}
+            initialVelocity={initialVelocity}
+            setInitialVelocity={setInitialVelocity}
+          />
+        </div>
       </div>
       <div className="simulation-container">
         <Canvas camera={{ position: [0, 0, 5], fov: 60 }}>
-          <ambientLight intensity={0.5} />
-          <directionalLight position={[10, 10, 10]} intensity={1.5} />
+          <color attach="background" args={['#0f172a']} />
+          <ambientLight intensity={0.3} />
+          <directionalLight position={[10, 10, 10]} intensity={1.2} />
           <Physics
             key={physicsKey}
             gravity={gravity ? [0, -9.81, 0] : [0, 0, 0]}
@@ -97,10 +106,15 @@ function App() {
               particleCount={particleCount}
               particleSize={particleSize}
               initialVelocity={initialVelocity}
+              onActiveParticlesChange={setActiveParticles}
             />
           </Physics>
           <OrbitControls enablePan={true} enableZoom={true} enableRotate={true} />
         </Canvas>
+        
+        <div className="simulation-status">
+          {isPlaying ? "Running" : "Paused"} • {activeParticles} active particles • Restitution: {restitution.toFixed(3)}
+        </div>
       </div>
     </div>
   )
