@@ -28,10 +28,15 @@ function App() {
     setTimeout(() => setIsPlaying(true), 100)
   }
 
-  // Reset physics when gravity changes
+  // Reset physics when simulation parameters change
   useEffect(() => {
     setPhysicsKey(prev => prev + 1)
-  }, [gravity])
+  }, [gravity, particleParticleFriction, particleWallFriction])
+
+  // Determine proper physics settings based on friction state
+  const timeStep = (!particleParticleFriction && !particleWallFriction) 
+    ? 1/240  // Use smaller timestep for zero-friction case for better stability
+    : 1/60   // Regular timestep for normal cases
 
   return (
     <div className="app-container">
@@ -58,16 +63,17 @@ function App() {
           <Physics
             key={physicsKey}
             gravity={gravity ? [0, -9.81, 0] : [0, 0, 0]}
-            timeStep={deltaTime * 0.01}
+            timeStep={timeStep}
             paused={!isPlaying}
-            interpolate={false}
+            interpolate={true}
             colliders={false}
-            numSolverIterations={4}
+            debug={false}
           >
             <PhysicsContainer
               key={resetKey}
               particleParticleFriction={particleParticleFriction}
               particleWallFriction={particleWallFriction}
+              gravity={gravity}
             />
           </Physics>
           <OrbitControls enablePan={true} enableZoom={true} enableRotate={true} />
