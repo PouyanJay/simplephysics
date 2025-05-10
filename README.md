@@ -17,13 +17,9 @@ A 3D particle physics simulator built with React, Three.js, and Rapier physics e
 - Reset simulation
 - Orbit controls for camera movement
 
-## Demo
-
-Visit the live demo at [https://simplephysics-demo.vercel.app](https://simplephysics-demo.vercel.app)
-
 ## Technologies Used
 
-- React 19
+- React.js
 - TypeScript
 - Three.js / React Three Fiber
 - Rapier 3D Physics Engine
